@@ -1,15 +1,5 @@
-import {FertilizerAdvice} from "./pages/FertilizerAdvice"
-
 function App() {
-  
-
-  return (
-    <>
-      <FertilizerAdvice/>
-    </>
-        
-    
-  )
+  return <></>;
 }
 
-export default App
+export default App;
