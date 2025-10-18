@@ -34,6 +34,6 @@ createRoot(document.getElementById("root")).render(
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
-    ,
+    
   </StrictMode>
 );
