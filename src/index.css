@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  /* Define your custom colors */
+  --color-primary: #73d411; /* Bright lime green */
+  --color-secondary: #d1e6bc; /* Soft pastel green */
+  --color-accent: #6c7167; /* Muted gray-green */
+  --color-background: #eaece9; /* Light gray-green for main background */
+  --color-background-light: #f7f8f6; /* Very light neutral background */
+  --color-background-muted: #f0f4eb; /* Subtle off-white green */
+}
