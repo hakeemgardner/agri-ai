@@ -1,11 +1,11 @@
-import {LandingPage} from "./pages/LandingPage"
+import {FertilizerAdvice} from "./pages/FertilizerAdvice"
 
 function App() {
   
 
   return (
     <>
-      <LandingPage/>
+      <FertilizerAdvice/>
     </>
         
     
