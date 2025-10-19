@@ -35,6 +35,6 @@ createRoot(document.getElementById("root")).render(
         <Route path="/profile" element={<ProtectedRoutes children={<Profile />} />} />
       </Routes>
     </BrowserRouter>
-    ,
+    
   </StrictMode>
 );
