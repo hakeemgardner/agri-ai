@@ -40,7 +40,7 @@ export const Header = () => {
     }
     getIsLoggedIn();
   }, []);
-
+  
   return (
     <header className="sticky top-0 z-1000 bg-white shadow-sm">
       <nav className="mx-auto px-6 lg:px-10 py-4 flex items-center justify-between">
