@@ -17,7 +17,7 @@ export const WeatherDashboard = () => {
       console.log(daily);
     };
 
-    const handleAdvice = async () => {
+    const handleAdvice = async (weatherData) => {
       const ai = new GoogleGenAI({ apiKey: gemini_key });
 
       const prompt = `
