@@ -88,7 +88,7 @@ export const CropDiseaseDetectionPage = () => {
       setIsLoading(false);
     }
   };
-
+// Hello world
   // Gemini Advice
   const ai = new GoogleGenAI({ apiKey: gemini_api });
   const prompt = `
