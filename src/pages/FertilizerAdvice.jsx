@@ -1,5 +1,6 @@
 // Internal Imports
 import { parseRecommendation } from "../utils/Fertilizer Advice/responseParser";
+import { Header } from "../components/Header";
 import { FertilizerAdivceForm } from "../pages/components/fertilizer advice/FertilizerAdivceForm";
 import { FertilizerAdviceInstructions } from "../pages/components/fertilizer advice/FertilizerAdviceInstructions";
 import { HeaderCard } from "../pages/components/fertilizer advice/HeaderCard";
@@ -11,7 +12,6 @@ import { ProTips } from "../pages/components/fertilizer advice/ProTips";
 import { useState } from "react";
 import { GoogleGenAI } from "@google/genai";
 import { Calendar, ThermometerSun, Clock } from "lucide-react";
-import Header from "../Components/Header";
 
 export const FertilizerAdvice = () => {
   const [selectCrop, setSelectCrop] = useState("");

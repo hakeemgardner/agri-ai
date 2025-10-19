@@ -15,15 +15,18 @@ export const Header = () => {
   useEffect(() => {
     async function getIsLoggedIn() {
       const currentUser = await supabase.auth.getUser();
-      if (currentUser === null) return alert("User doesnt exisit")
-      const { data, error } = await supabase.from("farmer_profile").select("*").eq("user_id", currentUser.data.user.id); 
+      if (currentUser === null) return alert("User doesnt exisit");
+      const { data, error } = await supabase
+        .from("farmer_profile")
+        .select("*")
+        .eq("user_id", currentUser.data.user.id);
       if (error) {
         alert(error.message);
         return;
       }
       const user = data[0];
       console.log(user);
-      if (user.isFarmer === true) { 
+      if (user.isFarmer === true) {
         setisLoggedIn(true);
       } else {
         setisLoggedIn(false);
@@ -36,7 +39,6 @@ export const Header = () => {
       }
     }
     getIsLoggedIn();
-  
   }, []);
   
   return (
@@ -71,62 +73,69 @@ export const Header = () => {
           >
             Marketplace
           </NavLink>
-          {isLoggedIn ? <div
-            className="relative"
-            onMouseEnter={() => setIsDropdownOpen(true)}
-            onMouseLeave={() => setIsDropdownOpen(false)}
-          >
-            <button className="text-content-light dark:text-content-dark text-lg font-medium transition-colors hover:cursor-pointer hover:text-primary focus:outline-none">
-              AI Tools
-            </button>
-            {isDropdownOpen && (
-              <div className="dark:bg-background-dark ring-opacity-5 absolute left-0 mt-0 w-56 rounded-md bg-background-light shadow-lg ring-1 ring-black">
-                <div className="py-2">
-                  <NavLink
-                    to="/fertilizer-advice"
-                    className={({ isActive }) =>
-                      isActive
-                        ? "text-content-light dark:text-content-dark block bg-primary px-4 py-2 text-white"
-                        : "text-content-light dark:text-content-dark block px-4 py-2 hover:bg-primary/10 hover:text-primary"
-                    }
-                  >
-                    Fertilizer Advisor
-                  </NavLink>
-                  <NavLink
-                    to="/crop-disease-detection"
-                    className={({ isActive }) =>
-                      isActive
-                        ? "text-content-light dark:text-content-dark block bg-primary px-4 py-2 text-white"
-                        : "text-content-light dark:text-content-dark block px-4 py-2 hover:bg-primary/10 hover:text-primary"
-                    }
-                  >
-                    AI Crop Disease Detector
-                  </NavLink>
-                  <NavLink
-                    to="/weatherdashboard"
-                    className={({ isActive }) =>
-                      isActive
-                        ? "text-content-light dark:text-content-dark block bg-primary px-4 py-2 text-white"
-                        : "text-content-light dark:text-content-dark block px-4 py-2 hover:bg-primary/10 hover:text-primary"
-                    }
-                  >
-                    Weather AI
-                  </NavLink>
+          {isLoggedIn ? (
+            <div
+              className="relative"
+              onMouseEnter={() => setIsDropdownOpen(true)}
+              onMouseLeave={() => setIsDropdownOpen(false)}
+            >
+              <button className="text-content-light dark:text-content-dark text-lg font-medium transition-colors hover:cursor-pointer hover:text-primary focus:outline-none">
+                AI Tools
+              </button>
+              {isDropdownOpen && (
+                <div className="dark:bg-background-dark ring-opacity-5 absolute left-0 mt-0 w-56 rounded-md bg-background-light shadow-lg ring-1 ring-black">
+                  <div className="py-2">
+                    <NavLink
+                      to="/fertilizer-advice"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "text-content-light dark:text-content-dark block bg-primary px-4 py-2 text-white"
+                          : "text-content-light dark:text-content-dark block px-4 py-2 hover:bg-primary/10 hover:text-primary"
+                      }
+                    >
+                      Fertilizer Advisor
+                    </NavLink>
+                    <NavLink
+                      to="/crop-disease-detection"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "text-content-light dark:text-content-dark block bg-primary px-4 py-2 text-white"
+                          : "text-content-light dark:text-content-dark block px-4 py-2 hover:bg-primary/10 hover:text-primary"
+                      }
+                    >
+                      AI Crop Disease Detector
+                    </NavLink>
+                    <NavLink
+                      to="/weatherdashboard"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "text-content-light dark:text-content-dark block bg-primary px-4 py-2 text-white"
+                          : "text-content-light dark:text-content-dark block px-4 py-2 hover:bg-primary/10 hover:text-primary"
+                      }
+                    >
+                      Weather AI
+                    </NavLink>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>:""}
-          {isAdmin ?<NavLink
-            to="/admin"
-            className={({ isActive }) =>
-              isActive
-                ? "dark:text-content-dark text-lg font-medium text-primary transition-colors hover:text-primary"
-                : "text-content-light dark:text-content-dark text-lg font-medium transition-colors hover:text-primary"
-            }
-          >
-            Dashboard
-          </NavLink>:""}
-          
+              )}
+            </div>
+          ) : (
+            ""
+          )}
+          {isAdmin ? (
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                isActive
+                  ? "dark:text-content-dark text-lg font-medium text-primary transition-colors hover:text-primary"
+                  : "text-content-light dark:text-content-dark text-lg font-medium transition-colors hover:text-primary"
+              }
+            >
+              Dashboard
+            </NavLink>
+          ) : (
+            ""
+          )}
         </div>
 
         {/* Destop Buttons */}
@@ -172,50 +181,57 @@ export const Header = () => {
             >
               Marketplace
             </NavLink>
-            {isLoggedIn? <><NavLink
-              to="/fertilizer-advice"
-              className={({ isActive }) =>
-                isActive
-                  ? "dark:text-content-dark text-lg font-medium text-primary transition-colors hover:text-primary"
-                  : "text-content-light dark:text-content-dark text-lg font-medium transition-colors hover:text-primary"
-              }
-            >
-              Fertilizer Advisor
-            </NavLink>
-            <NavLink
-              to="/crop-disease-detection"
-              className={({ isActive }) =>
-                isActive
-                  ? "dark:text-content-dark text-lg font-medium text-primary transition-colors hover:text-primary"
-                  : "text-content-light dark:text-content-dark text-lg font-medium transition-colors hover:text-primary"
-              }
-            >
-              AI Crop Disease Detector
-            </NavLink>
-            <NavLink
-              to="/weatherdashboard"
-              className={({ isActive }) =>
-                isActive
-                  ? "dark:text-content-dark text-lg font-medium text-primary transition-colors hover:text-primary"
-                  : "text-content-light dark:text-content-dark text-lg font-medium transition-colors hover:text-primary"
-              }
-            >
-              Weather AI
-              </NavLink></> : ""}
-            {isAdmin?<NavLink
-              className={({ isActive }) =>
-                isActive
-                  ? "dark:text-content-dark text-lg font-medium text-primary transition-colors hover:text-primary"
-                  : "text-content-light dark:text-content-dark text-lg font-medium transition-colors hover:text-primary"
-              }
-              to="/admin"
-            >
-            Dashboard
-            </NavLink> :""}
-            
-            
-            
-            
+            {isLoggedIn ? (
+              <>
+                <NavLink
+                  to="/fertilizer-advice"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "dark:text-content-dark text-lg font-medium text-primary transition-colors hover:text-primary"
+                      : "text-content-light dark:text-content-dark text-lg font-medium transition-colors hover:text-primary"
+                  }
+                >
+                  Fertilizer Advisor
+                </NavLink>
+                <NavLink
+                  to="/crop-disease-detection"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "dark:text-content-dark text-lg font-medium text-primary transition-colors hover:text-primary"
+                      : "text-content-light dark:text-content-dark text-lg font-medium transition-colors hover:text-primary"
+                  }
+                >
+                  AI Crop Disease Detector
+                </NavLink>
+                <NavLink
+                  to="/weatherdashboard"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "dark:text-content-dark text-lg font-medium text-primary transition-colors hover:text-primary"
+                      : "text-content-light dark:text-content-dark text-lg font-medium transition-colors hover:text-primary"
+                  }
+                >
+                  Weather AI
+                </NavLink>
+              </>
+            ) : (
+              ""
+            )}
+            {isAdmin ? (
+              <NavLink
+                className={({ isActive }) =>
+                  isActive
+                    ? "dark:text-content-dark text-lg font-medium text-primary transition-colors hover:text-primary"
+                    : "text-content-light dark:text-content-dark text-lg font-medium transition-colors hover:text-primary"
+                }
+                to="/admin"
+              >
+                Dashboard
+              </NavLink>
+            ) : (
+              ""
+            )}
+
             <div className="flex flex-col gap-3 pt-4 border-t border-gray-200">
               <NavLink to="/sign-up">
                 <button className="px-4 py-2 text-sm font-bold bg-green-500 text-white rounded-full hover:bg-green-700 transition-colors shadow-md cursor-pointer">
@@ -234,5 +250,3 @@ export const Header = () => {
     </header>
   );
 };
-
-export default Header;

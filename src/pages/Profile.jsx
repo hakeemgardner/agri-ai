@@ -93,10 +93,10 @@ export const Profile = () => {
               className="rounded-full w-20 h-20 border border-gray-200"
             />
             <div>
-              <h2 className="font-semibold text-lg">{_userInfo?.name || 'Loading...'}</h2>
+              <h2 className="font-semibold text-lg"></h2>
               <p className="text-gray-500">Farmer</p>
               <p className="text-sm text-gray-400">
-                Joined AgriConnect AI in {_userInfo?.created_at ? new Date(_userInfo.created_at).getFullYear() : '2025'}
+                Joined AgriConnect AI in 2025
               </p>
             </div>
           </div>
@@ -110,7 +110,7 @@ export const Profile = () => {
           </button>
         </div>
 
-        <form className="space-y-10" onSubmit={handleSubmit}>
+        <form className="space-y-10">
           <section>
             <h3 className="text-xl font-semibold mb-4">
               Personal Information
@@ -121,8 +121,6 @@ export const Profile = () => {
                 <input
                   type="text"
                   name="fullName"
-                  value={_userInfo?.name || ''}
-                  onChange={(e) => setuserInfo({..._userInfo, name: e.target.value})}
                   className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 outline-none"
                 />
               </div>
@@ -131,8 +129,6 @@ export const Profile = () => {
                 <input
                   type="email"
                   name="email"
-                  value={_userInfo?.email || ''}
-                  onChange={(e) => setuserInfo({..._userInfo, email: e.target.value})}
                   className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 outline-none"
                 />
               </div>
@@ -141,8 +137,6 @@ export const Profile = () => {
                 <input
                   type="text"
                   name="phone"
-                  value={_userInfo?.telephone || ''}
-                  onChange={(e) => setuserInfo({..._userInfo, telephone: e.target.value})}
                   className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 outline-none"
                 />
               </div>
@@ -150,10 +144,7 @@ export const Profile = () => {
                 <label className="block text-gray-600 mb-1">Parish</label>
                 <select
                   name="parish"
-                  value={_userInfo?.parish || ''}
-                  onChange={(e) => setuserInfo({..._userInfo, parish: e.target.value})}
                   className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 outline-none">
-                  <option value="">Select Parish</option>
                   <option>St. Catherine</option>
                   <option>Clarendon</option>
                   <option>Manchester</option>
@@ -175,6 +166,31 @@ export const Profile = () => {
           {products.length === 0 ? (
             <div className="text-center py-10 text-gray-500">
               <p>No products found. Start adding products to your marketplace!</p>
+          <h1 className="text-[20px] font-bold">Farmer Producs </h1>
+          <div className="flex justify-center gap-5">
+            <div className="bg-background-light rounded-xl overflow-hidden border p-15 w-80 justify-center text-center uborder-border-light shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className=""></div>
+              <div className="p-6 w-[200px]">
+                <h4 className="text-2xl font-bold text-content-light dark:text-content-dark">
+                  Banana
+                </h4>
+                <p className="text-lg text-content-light/80 mt-1">$5/Hand</p>
+                <button className="mt-6 w-full h-14 bg-green-400 text-content-dark text-lg font-bold rounded-lg hover:opacity-90 transition-opacity cursor-pointer">
+                  Contact Farmer
+                </button>
+              </div>
+            </div>
+            <div className="bg-background-light rounded-xl overflow-hidden border p-15 w-80 justify-center text-center uborder-border-light shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className=""></div>
+              <div className="p-6 w-[200px]">
+                <h4 className="text-2xl font-bold text-content-light dark:text-content-dark">
+                  Banana
+                </h4>
+                <p className="text-lg text-content-light/80 mt-1">$5/Hand</p>
+                <button className="mt-6 w-full h-14 bg-green-400 text-content-dark text-lg font-bold rounded-lg hover:opacity-90 transition-opacity cursor-pointer">
+                  Contact Farmer
+                </button>
+              </div>
             </div>
           ) : (
             <div className="overflow-x-auto pb-4">

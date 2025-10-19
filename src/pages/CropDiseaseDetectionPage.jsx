@@ -1,7 +1,7 @@
 // Internal Imports
 import { InfoCard } from "../pages/components/InfoCard";
 import { UploadArea } from "../pages/components/UploadArea";
-import { Header } from "../Components/Header";
+import { Header } from "../components/Header";
 import { HeaderCard } from "../pages/components/HeaderCard";
 import { parseGeminiResponse } from "../utils/responseParser";
 import { AskAgainButton } from "../pages/components/AskAgainButton";

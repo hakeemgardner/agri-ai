@@ -3,12 +3,9 @@ import Header from "../Components/Header";
 import { ReadData, readFarmers } from "../database/admin_service/read_multi_products";
 
 export const RADAOfficerDashboard = () => {
-  const [radaData, setRadaData] = useState({
-    regFarmers: 0,
-    activeListing: 0,
-  });
-  const [recentListings, setRecentListings] = useState([]);
-  
+  const [farmerInfo, setfarmerInfo] = useState([]);
+  const [productListing, setproductListing] = useState([]);
+  const [message, setmessage] = useState('');
 
   useEffect(() => {
     async function fetchData() {
@@ -40,6 +37,8 @@ export const RADAOfficerDashboard = () => {
     }
 
     fetchData();
+    return;
+  
   }, []);
 
   //time ago function
@@ -58,13 +57,9 @@ export const RADAOfficerDashboard = () => {
       { label: "second", seconds: 1 },
     ];
 
-    for (const interval of intervals) {
-      const count = Math.floor(seconds / interval.seconds);
-      if (count >= 1) {
-        return `${count} ${interval.label}${count > 1 ? "s" : ""} ago`;
-      }
-    }
-    return "just now";
+  async function handleMessageSubmit(e) {
+    e.preventDefault();
+    await CreateMessage({ message: message });
   }
 
   return (
