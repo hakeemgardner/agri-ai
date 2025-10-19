@@ -62,6 +62,8 @@ export const MarketPlace = () => {
   ];
 
   return (
+    <>
+    <Header></Header>
     <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
@@ -183,6 +185,7 @@ export const MarketPlace = () => {
         onClose={closeModal}
         farmer={selectedFarmer}
       />
-    </main>
+      </main>
+    </>
   );
 };
