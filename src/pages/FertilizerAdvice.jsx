@@ -1,130 +1,130 @@
+// Internal Imports
+import { parseRecommendation } from "../utils/Fertilizer Advice/responseParser";
+import { Header } from "../components/Header";
+import { FertilizerAdivceForm } from "../pages/components/fertilizer advice/FertilizerAdivceForm";
+import { FertilizerAdviceInstructions } from "../pages/components/fertilizer advice/FertilizerAdviceInstructions";
+import { HeaderCard } from "../pages/components/fertilizer advice/HeaderCard";
+import { NpkRatioVisualization } from "../pages/components/fertilizer advice/NpkRatioVisualization";
+import { PrimaryRecommendation } from "../pages/components/fertilizer advice/PrimaryRecommendation";
+import { AIResponse } from "../pages/components/fertilizer advice/AIResponse";
+import { ProTips } from "../pages/components/fertilizer advice/ProTips";
+//External Imports
 import { useState } from "react";
 import { GoogleGenAI } from "@google/genai";
+import { Calendar, ThermometerSun, Clock } from "lucide-react";
 
 export const FertilizerAdvice = () => {
-  const [advice, setAdvice] = useState("");
-  const [crop, setCrop] = useState("");
-  const [soil, setSoil] = useState("");
+  const [selectCrop, setSelectCrop] = useState("");
+  const [selectSoil, setSelectSoil] = useState("");
+  const [fertilizer, setFertilizer] = useState("");
+  const [showResults, setShowResults] = useState(false);
+  const [recommendation, setRecommendation] = useState(null);
 
-  const gemini_key = import.meta.env.VITE_GEMINI_API_KEY;
-
-  const handleCrop = (e) => {
-    setCrop(e.target.value);
-  };
-
-  const handleSoil = (e) => {
-    setSoil(e.target.value);
-  };
-
-  const handleAdvice = async () => {
-    if (crop === "Select Crop Type" || soil === "Select Soil Type") {
-      alert("You need to select a crop or a soil type");
+  function handleCropSelection(event) {
+    if (event.target.value === "Select Crop Type") {
       return;
     }
-    console.log(crop, soil);
-    try {
-      const ai = new GoogleGenAI({ apiKey: gemini_key });
+    setSelectCrop(event.target.value);
+  }
 
-      const prompt = `You are an expert agricultural advisor.Based on the following data, recommend a fertilizer mix, soil treatment plan, and management advice.
-
-        Crop: ${crop}
-        Soil Type: ${soil}
-
-        Provide:
-        1. Ideal NPK (Nitrogen-Phosphorus-Potassium) ratio and reasoning.
-        2. Organic or mineral amendments (if suitable).
-        3. Any additional care tips for maximizing yield and soil health.
-        Keep it short, around 5 sentences, clear, and practical for farmers in the Caribbean region.
-        `;
-
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
-      });
-      setAdvice(response.text);
-      console.log(response.text);
-    } catch (error) {
-      console.log(error);
+  function handleSoilSelection(event) {
+    if (event.target.value === "Select Soil Type") {
+      return;
     }
-  };
+    setSelectSoil(event.target.value);
+  }
+
+  const gemini_api = import.meta.env.VITE_GEMINI_API_KEY;
+  const ai = new GoogleGenAI({ apiKey: gemini_api });
+
+  // Function to parse AI response and create structured data
+
+  async function handleFertilizerAdvice() {
+    if (!selectCrop || !selectSoil) {
+      alert("Please select both crop type and soil type");
+      return;
+    }
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `You are an agricultural expert. Based on the crop type and soil type, generate a **fertilizer recommendation** in this exact format:
+Fertilizer Mix: 10-10-10 NPK Blend
+Application Timing: Step-by-step guide (easy to understand):
+1. At planting — apply a starter dose of 10-10-10 around the seed/seedling.
+2. 3–4 weeks after emergence — side-dress with 10-10-10 once.
+3. Repeat side-dressing every 3–4 weeks as the crop grows (stop at flowering/fruit set or 2–3 weeks before harvest for leafy crops).
+4. Monitor plant health and soil; adjust frequency if plants show deficiency or excess.
+Disclaimer: Always follow manufacturer's instructions.
+Keep it concise. No extra text, no explanations. Crop Type: ${selectCrop} Soil Type: ${selectSoil}`,
+      config: {
+        thinkingConfig: {
+          thinkingBudget: 0,
+        },
+      },
+    });
+
+    setFertilizer(response.text);
+    setRecommendation(
+      parseRecommendation(response.text, selectCrop, selectSoil)
+    );
+    setShowResults(true);
+  }
 
   return (
-    <div className=" h-[700px] flex flex-wrap p-20 justify-center gap-6">
-      <div className=" h-[500px] w-[400px] rounded-2xl p-5 justify-center">
-        <h1 className="text-4xl font-bold">
-          Fertilizer <br />
-          Advice
-        </h1>
-        <h2 className="text-gray-600">
-          Get Ai-powered recommendation for <br /> your crops.{" "}
-        </h2>
-        <h2 className="mt-5 font-bold">Mi Crop Type</h2>
-        <select
-          value={crop}
-          onChange={handleCrop}
-          className="mt-3 font-bold text-[17px]  border-gray-300 cursor-pointer border-2 w-[100%] p-2 rounded-[10px] h-[50px]  bg-white text-gray-700 focus:outline-none focus:ring-2 space-x-2 transform transition-transform duration-200 hover:-translate-y-1"
-        >
-          <option className="font-bold" value="Select crop Type">
-            Select Crop Type
-          </option>
-          <option className="font-bold" value="Yam">
-            Yam
-          </option>
-          <option className="font-bold" value="Sweet Potato">
-            Sweet Potato
-          </option>
-          <option className="font-bold" value="Pimento">
-            Pimento
-          </option>
-          <option className="font-bold" value="Callaloo">
-            Callaloo
-          </option>
-          <option className="font-bold" value="Schotch Bonnet Pepper">
-            Schotch Bonnet Pepper
-          </option>
-        </select>
-        <h2 className="mt-6 font-bold">Mi soil Type</h2>
-        <select
-          value={soil}
-          onChange={handleSoil}
-          className=" mt-3 font-bold text-[17px] cursor-pointer border-2 w-[100%] p-2 rounded-[10px] h-[50px] border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 space-x-2 transform transition-transform duration-200 hover:-translate-y-1"
-        >
-          <option className="font-bold " value="Select Soil Type">
-            Select Soil Type
-          </option>
-          <option className="font-bold" value="Clay loam">
-            Clay loam
-          </option>
-          <option className="font-bold" value="Sandy Loam">
-            Sandy Loam
-          </option>
-          <option className="font-bold" value="red (Red Dirt)">
-            red (Red Dirt)
-          </option>
-        </select>
-        <button
-          onClick={handleAdvice}
-          className="bg-green-600 mt-10 p-3 w-[100%] rounded-[5px] hover:cursor-pointer "
-        >
-          Get Advice
-        </button>
-      </div>
-      <div className=" bg-green-100 h-[450px] w-[340px] rounded-2xl p-5">
-        <h1 className="text-2xl font-bold">Your Recommendation</h1>
-        <h2>Here's our AI Suggests:</h2>
-        <div className="h-[100px] w-[100%] bg-white mt-5 rounded-[5px] justify-center text-center p-3">
-          <h2 className="font-bold">Fertilizer Mix</h2>
-          <p>{advice}</p>
+    <div className="dark:bg-background-dark font-display min-h-screen bg-background-light">
+      <Header />
+
+      {!showResults ? (
+        <main className="container mx-auto flex-grow px-4 py-8 sm:px-6 md:py-16 lg:px-8">
+          <div className="mx-auto grid max-w-3xl grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-16">
+            <div className="space-y-8">
+              <FertilizerAdivceForm
+                handleCropSelection={handleCropSelection}
+                handleSoilSelection={handleSoilSelection}
+                handleFertilizerAdvice={handleFertilizerAdvice}
+                selectCrop={selectCrop}
+                selectSoil={selectSoil}
+              />
+            </div>
+            <div className="space-y-6 rounded-xl bg-primary/10 p-6 dark:bg-primary/20">
+              <FertilizerAdviceInstructions />
+            </div>
+          </div>
+        </main>
+      ) : (
+        <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-lime-50 p-6 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+          <div className="mx-auto max-w-7xl">
+            {/* Back Button */}
+            <button
+              onClick={() => setShowResults(false)}
+              className="mb-6 flex items-center gap-2 font-bold text-primary transition-colors hover:text-primary/80"
+            >
+              ← Back to Form
+            </button>
+
+            {/* Header Card */}
+            <div className="mb-6 rounded-2xl border border-green-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+              <HeaderCard recommendation={recommendation} />
+            </div>
+
+            {/* NPK Ratio Visualization */}
+            <div className="mb-6 rounded-2xl border border-green-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+              <NpkRatioVisualization recommendation={recommendation} />
+              {/* Primary Recommendation */}
+              <div className="rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 p-6 text-white">
+                <PrimaryRecommendation recommendation={recommendation} />
+              </div>
+            </div>
+
+            {/* AI Response */}
+            <AIResponse recommendation={recommendation} />
+            {/* Pro Tips */}
+            <div className="rounded-2xl bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 p-6 text-white shadow-lg">
+              <ProTips />
+            </div>
+          </div>
         </div>
-        <div className="h-[100px] w-[100%] bg-white mt-5 rounded-[5px] justify-center text-center p-3">
-          <h2 className="font-bold">Fertilizer Mix</h2>
-          <p>Apply at planting and every 4 weeks after.</p>
-        </div>
-        <p className="mt-5">
-          Disclaimer: Always follow manufacturer's instructions for application
-          rates and safety. This is a recommendation, not a guarantee.
-        </p>
-      </div>
+      )}
     </div>
   );
 };
