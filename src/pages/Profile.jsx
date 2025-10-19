@@ -1,8 +1,19 @@
-/** @format */
-
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { ReadCurrentUser } from "../database/farmer_service/read_current_farmer";
 
 export const Profile = () => {
+  const [userInfo, setuserInfo] = useState([]);
+  
+  useEffect(() => {
+    async function fetchData() {
+      const user = await ReadCurrentUser();
+      setuserInfo(user);
+    }
+    fetchData();
+
+    return;
+  }, [])
+  
   return (
     <div className="min-h-screen bg-[#fffdf6] font-sans text-gray-800">
       <main className="max-w-5xl mx-auto p-6">
