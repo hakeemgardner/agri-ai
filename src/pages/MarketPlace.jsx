@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { FetchAllProduct } from "../database/product_service/read_multi_product";
 import { Header } from "../Components/Header";
 import { NavLink } from "react-router";
+import { QueryFarmer } from "../database/farmer_service/query_farmer";
 
 export const MarketPlace = () => {
   const [cropData, setCropData] = useState([]);
@@ -23,6 +24,8 @@ export const MarketPlace = () => {
       }
     };
 
+    
+
     fetchData();
   }, []);
 
@@ -33,9 +36,32 @@ export const MarketPlace = () => {
     return matchesSearch && matchesParish;
   });
 
-  const handleContactClick = (farmer) => {
-    setSelectedFarmer(farmer);
-    setIsModalOpen(true);
+  const handleContactClick = async (crop) => {
+    try {
+      // If crop has farmer_id, fetch full farmer data
+      console.log("The crop is", crop)
+      if (crop.farmer_id) {
+        const farmerData = await QueryFarmer({id: crop.farmer_id});
+        console.log("Farmer Data here", farmerData);
+        setSelectedFarmer(farmerData);
+        // Wait for state to update before opening modal
+        setTimeout(() => setIsModalOpen(true), 0);
+      } else {
+        // Fallback: use farmer data embedded in crop (for backward compatibility)
+        setSelectedFarmer({
+          name: crop.farmerName || "Local Farmer",
+          phone: crop.farmerPhone || "+1 (876) 555-0000",
+          email: crop.farmerEmail || "farmer@farm.jm",
+          location: crop.location || "Jamaica",
+          farm: crop.farmName || "Local Farm",
+          bio: crop.farmerBio || "Dedicated to providing quality produce."
+        });
+        setIsModalOpen(true);
+      }
+    } catch (error) {
+      console.error("Error fetching farmer data:", error);
+      alert("Failed to load farmer information. Please try again.");
+    }
   };
 
   const closeModal = () => {
@@ -124,17 +150,11 @@ export const MarketPlace = () => {
             filteredCrops.map((crop) => (
               <CropListings
                 key={crop.id || crop.title}
-                image={crop.image || "/src/assets/images/placeholder.jpg"}
+                image={crop.image_url || "/src/assets/images/placeholder.jpg"}
                 title={crop.title}
                 price={crop.price || "Price upon request"}
-                farmer={{
-                  name: crop.farmerName || "Local Farmer",
-                  phone: crop.farmerPhone || "+1 (876) 555-0000",
-                  email: crop.farmerEmail || "farmer@farm.jm",
-                  location: crop.location || "Jamaica",
-                  farm: crop.farmName || "Local Farm",
-                  bio: crop.farmerBio || "Dedicated to providing quality produce."
-                }}
+                quantity={crop.weight_unit}
+                farmer={crop}
                 onContactClick={handleContactClick}
               />
             ))
