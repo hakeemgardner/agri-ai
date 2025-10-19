@@ -25,7 +25,19 @@ You are an expert agricultural advisor. Based on the following 7-day weather for
 give detailed, location-neutral farming advice for smallholder farmers.
 
 Here is the data:
-${JSON.stringify(weatherData.daily, null, 2)}
+Today's temperature ${
+        weatherData.temperature_2m_max
+          ? weatherData.temperature_2m_max[0]
+          : "Loading"
+      }, humidity${
+        weatherData.relative_humidity_2m_mean
+          ? weatherData.relative_humidity_2m_mean[0]
+          : "Loading"
+      }, windspeed ${
+        weatherData.wind_speed_10m_mean
+          ? weatherData.wind_speed_10m_mean[0]
+          : "Loading"
+      }
 
 Please include:
 1. **General summary** of expected weather (temperature trends, rain, wind).
