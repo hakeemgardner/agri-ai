@@ -8,3 +8,18 @@ export async function getAllProductListing() {
     }
     return data;
 }
+
+export async function readFarmers() {
+    const { data, err } = await supabase.from("farmer_profile").select('*');
+    if (err) {
+        console.log(err);
+    }
+
+    return data;
+}
+
+export async function ReadData() {
+    const { data, err } = await supabase.from("marketplace").select("*");
+
+    return data;
+}

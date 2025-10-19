@@ -1,18 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { ReadCurrentUser } from "../database/farmer_service/read_current_farmer";
+import { UpdateCurrentUser } from "../database/farmer_service/update_service";
+import { FetchCurrentUserProducts } from "../database/product_service/read_single_product";
 
 export const Profile = () => {
-  const [userInfo, setuserInfo] = useState([]);
+  const [_userInfo, setuserInfo] = useState(null);
   
   useEffect(() => {
     async function fetchData() {
       const user = await ReadCurrentUser();
+      FetchCurrentUserProducts();
       setuserInfo(user);
     }
     fetchData();
 
     return;
-  }, [])
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const updatedUser = await UpdateCurrentUser(_userInfo);
+    if (updatedUser) {
+      setuserInfo(updatedUser);
+    }
+  }
   
   return (
     <div className="min-h-screen bg-[#fffdf6] font-sans text-gray-800">
@@ -30,10 +41,10 @@ export const Profile = () => {
               className="rounded-full w-20 h-20 border border-gray-200"
             />
             <div>
-              <h2 className="font-semibold text-lg"></h2>
+              <h2 className="font-semibold text-lg">{_userInfo?.name || 'Loading...'}</h2>
               <p className="text-gray-500">Farmer</p>
               <p className="text-sm text-gray-400">
-                Joined AgriConnect AI in 2025
+                Joined AgriConnect AI in {_userInfo?.created_at ? new Date(_userInfo.created_at).getFullYear() : '2025'}
               </p>
             </div>
           </div>
@@ -42,7 +53,7 @@ export const Profile = () => {
           </button>
         </div>
 
-        <form className="space-y-10">
+        <form className="space-y-10" onSubmit={handleSubmit}>
           <section>
             <h3 className="text-xl font-semibold mb-4 ">
               Personal Information
@@ -53,6 +64,8 @@ export const Profile = () => {
                 <input
                   type="text"
                   name="fullName"
+                  value={_userInfo?.name || ''}
+                  onChange={(e) => setuserInfo({..._userInfo, name: e.target.value})}
                   className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 outline-none"
                 />
               </div>
@@ -61,6 +74,8 @@ export const Profile = () => {
                 <input
                   type="email"
                   name="email"
+                  value={_userInfo?.email || ''}
+                  onChange={(e) => setuserInfo({..._userInfo, email: e.target.value})}
                   className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 outline-none"
                 />
               </div>
@@ -69,6 +84,8 @@ export const Profile = () => {
                 <input
                   type="text"
                   name="phone"
+                  value={_userInfo?.telephone || ''}
+                  onChange={(e) => setuserInfo({..._userInfo, telephone: e.target.value})}
                   className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 outline-none"
                 />
               </div>
@@ -76,7 +93,10 @@ export const Profile = () => {
                 <label className="block text-gray-600 mb-1">Parish</label>
                 <select
                   name="parish"
+                  value={_userInfo?.parish || ''}
+                  onChange={(e) => setuserInfo({..._userInfo, parish: e.target.value})}
                   className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 outline-none">
+                  <option value="">Select Parish</option>
                   <option>St. Catherine</option>
                   <option>Clarendon</option>
                   <option>Manchester</option>
@@ -90,7 +110,7 @@ export const Profile = () => {
               Save Changes
             </button>
           </section>
-          <h1 className="text-[20px] font-bold">Farmer Producs </h1>
+          <h1 className="text-[20px] font-bold">Farmer Products</h1>
           <div className="flex justify-center gap-5">
             <div className="bg-background-light rounded-xl overflow-hidden border p-15 w-80 justify-center text-center uborder-border-light shadow-md hover:shadow-xl transition-shadow duration-300">
               <div className=""></div>
