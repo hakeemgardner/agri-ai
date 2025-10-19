@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { SignUpUser } from "../../database/auth/SignUpUser";
 import { createFarmer } from "../../database/farmer_service/create_farmer";
-import { useNavigate } from "react-router";
 
 export const SignUpPage = () => {
-  let navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -32,13 +30,9 @@ export const SignUpPage = () => {
         return;
       }
       const data = await SignUpUser({ email: formData.email, password: formData.password });
-      console.log(data);
       if (data) {
         await createFarmer({ name: formData.name, email: formData.email, parish: formData.parish, telephone: formData.telephone });
-        navigate("/login");
-        
       }
-      
   }
   
     return <div>

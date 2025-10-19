@@ -1,7 +1,6 @@
 import { NavLink } from "react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { supabase } from "../../client";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -9,37 +8,7 @@ export const Header = () => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  const [isLoggedIn, setisLoggedIn] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(null);
 
-  useEffect(() => {
-    async function getIsLoggedIn() {
-      const currentUser = await supabase.auth.getUser();
-      if (currentUser === null) return alert("User doesnt exisit")
-      const { data, error } = await supabase.from("farmer_profile").select("*").eq("user_id", currentUser.data.user.id); 
-      if (error) {
-        alert(error.message);
-        return;
-      }
-      const user = data[0];
-      console.log(user);
-      if (user.isFarmer === true) { 
-        setisLoggedIn(true);
-      } else {
-        setisLoggedIn(false);
-      }
-
-      if (user.isAdmin === true) {
-        setIsAdmin(true);
-      } else {
-        setIsAdmin(false);
-      }
-    }
-    getIsLoggedIn();
-  
-  }, []);
-  
-console.log("isAdmin",isAdmin)
   return (
     <header className="sticky top-0 z-1000 bg-white shadow-sm">
       <nav className="mx-auto px-6 lg:px-10 py-4 flex items-center justify-between">
@@ -72,7 +41,7 @@ console.log("isAdmin",isAdmin)
           >
             Marketplace
           </NavLink>
-          {isLoggedIn ? <div
+          <div
             className="relative"
             onMouseEnter={() => setIsDropdownOpen(true)}
             onMouseLeave={() => setIsDropdownOpen(false)}
@@ -116,8 +85,8 @@ console.log("isAdmin",isAdmin)
                 </div>
               </div>
             )}
-          </div>:""}
-          {isAdmin ?<NavLink
+          </div>
+          <NavLink
             to="/admin"
             className={({ isActive }) =>
               isActive
@@ -126,8 +95,7 @@ console.log("isAdmin",isAdmin)
             }
           >
             Dashboard
-          </NavLink>:""}
-          
+          </NavLink>
         </div>
 
         {/* Destop Buttons */}
@@ -173,7 +141,7 @@ console.log("isAdmin",isAdmin)
             >
               Marketplace
             </NavLink>
-            {isLoggedIn? <><NavLink
+            <NavLink
               to="/fertilizer-advice"
               className={({ isActive }) =>
                 isActive
@@ -202,8 +170,8 @@ console.log("isAdmin",isAdmin)
               }
             >
               Weather AI
-              </NavLink></> : ""}
-            {isAdmin?<NavLink
+            </NavLink>
+            <NavLink
               className={({ isActive }) =>
                 isActive
                   ? "dark:text-content-dark text-lg font-medium text-primary transition-colors hover:text-primary"
@@ -211,12 +179,8 @@ console.log("isAdmin",isAdmin)
               }
               to="/admin"
             >
-            Dashboard
-            </NavLink> :""}
-            
-            
-            
-            
+              Dashboard
+            </NavLink>
             <div className="flex flex-col gap-3 pt-4 border-t border-gray-200">
               <NavLink to="/sign-up">
                 <button className="px-4 py-2 text-sm font-bold bg-green-500 text-white rounded-full hover:bg-green-700 transition-colors shadow-md cursor-pointer">

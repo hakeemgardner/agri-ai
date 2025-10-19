@@ -7,6 +7,5 @@ export async function ReadCurrentUser() {
     if (error) {
         alert(error.message);
     }
-    console.log(data[0]);
-    return data[0];
+    console.log(data);
 }
