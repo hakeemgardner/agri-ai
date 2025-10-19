@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ReadCurrentUser } from "../database/farmer_service/read_current_farmer";
 
 export const Profile = () => {
-  const [userInfo, setuserInfo] = useState([]);
+  const [_userInfo, setuserInfo] = useState([]);
   
   useEffect(() => {
     async function fetchData() {
