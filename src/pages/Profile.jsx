@@ -3,10 +3,21 @@ import { ReadCurrentUser } from "../database/farmer_service/read_current_farmer"
 import { UpdateCurrentUser } from "../database/farmer_service/update_service";
 import { FetchCurrentUserProducts } from "../database/product_service/read_single_product";
 import { logoutUser } from "../database/farmer_service/log_out";
+import { UpdateProduct } from "../database/farmer_service/update_product";
 
 export const Profile = () => {
   const [_userInfo, setuserInfo] = useState(null);
   const [products, setProducts] = useState([]);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editForm, setEditForm] = useState({
+    title: "",
+    category: "",
+    price: "",
+    quantity: 0,
+    weight: "",
+    weight_unit: "lb",
+    parish: "",
+  });
   
   useEffect(() => {
     async function fetchData() {
@@ -18,7 +29,42 @@ export const Profile = () => {
     fetchData();
 
     return;
-  }, [])
+  }, []);
+
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+    setEditForm({
+      title: product.title,
+      category: product.category,
+      price: product.price,
+      quantity: product.quantity,
+      weight: product.weight,
+      weight_unit: product.weight_unit,
+      parish: product.parish,
+    });
+  }
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    const result = await UpdateProduct(editingProduct.id, editForm);
+    if (result) {
+      // Update the product in the local state
+      setProducts(products.map(p => p.id === editingProduct.id ? result : p));
+      setEditingProduct(null);
+    }
+  }
+
+  const closeModal = () => {
+    setEditingProduct(null);
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const updatedUser = await UpdateCurrentUser(_userInfo);
+    if (updatedUser) {
+      setuserInfo(updatedUser);
+    }
+  }
   
   const handleDelete = async (productId) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this product?");
@@ -189,7 +235,9 @@ export const Profile = () => {
                         📍 {product.parish}
                       </p>
                       <div className="flex gap-2">
-                        <button className="flex-1 h-12 bg-green-400 text-gray-800 text-base font-bold rounded-lg hover:bg-green-500 transition-colors">
+                        <button
+                          onClick={() => handleEdit(product)}
+                          className="flex-1 h-12 bg-green-400 text-gray-800 text-base font-bold rounded-lg hover:bg-green-500 transition-colors">
                           Edit
                         </button>
                         <button 
@@ -206,6 +254,134 @@ export const Profile = () => {
           )}
         </div>
       </main>
+
+      {/* Card */}
+      {editingProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-800">Edit Product</h2>
+              <button 
+                onClick={closeModal}
+                className="text-gray-500 hover:text-gray-700 text-3xl leading-none">&times;</button>
+            </div>
+            
+            <form onSubmit={handleEditSubmit} className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="md:col-span-2">
+                  <label className="block text-gray-700 font-semibold mb-2">Product Title</label>
+                  <input
+                    type="text"
+                    value={editForm.title}
+                    onChange={(e) => setEditForm({...editForm, title: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-400 outline-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Category</label>
+                  <input
+                    type="text"
+                    value={editForm.category}
+                    onChange={(e) => setEditForm({...editForm, category: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-400 outline-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Price ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editForm.price}
+                    onChange={(e) => setEditForm({...editForm, price: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-400 outline-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Amount Available</label>
+                  <input
+                    type="number"
+                    value={editForm.amount}
+                    onChange={(e) => setEditForm({...editForm, amount: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-400 outline-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Weight</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editForm.weight}
+                    onChange={(e) => setEditForm({...editForm, weight: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-400 outline-none"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Weight Unit</label>
+                  <select
+                    value={editForm.weight_unit}
+                    onChange={(e) => setEditForm({...editForm, weight_unit: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-400 outline-none"
+                    required>
+                    <option value="lb">lb (Pounds)</option>
+                    <option value="kg">kg (Kilograms)</option>
+                    <option value="oz">oz (Ounces)</option>
+                    <option value="g">g (Grams)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-semibold mb-2">Parish</label>
+                  <select
+                    value={editForm.parish}
+                    onChange={(e) => setEditForm({...editForm, parish: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-green-400 outline-none"
+                    required>
+                    <option value="">Select Parish</option>
+                    <option>St. Catherine</option>
+                    <option>Clarendon</option>
+                    <option>Manchester</option>
+                    <option>St. Elizabeth</option>
+                    <option>Kingston</option>
+                    <option>St. Andrew</option>
+                    <option>St. Thomas</option>
+                    <option>Portland</option>
+                    <option>St. Mary</option>
+                    <option>St. Ann</option>
+                    <option>Trelawny</option>
+                    <option>St. James</option>
+                    <option>Hanover</option>
+                    <option>Westmoreland</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-8">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-lg transition">
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-green-400 hover:bg-green-500 text-gray-800 font-bold py-3 px-6 rounded-lg transition">
+                  Update Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
