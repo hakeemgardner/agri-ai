@@ -6,5 +6,13 @@ export async function SignUpUser({ email, password }) {
         alert(error.message);
         return;
     }
-    return data;
+    if (data.user) {
+        alert("User with this email address already exists");
+        return;
+    }
+    if (!data.user) {
+        alert("An email verification was sent");
+        return;
+    }
+    return true;
 }

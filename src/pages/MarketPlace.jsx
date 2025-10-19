@@ -3,209 +3,171 @@ import FarmerModal from "../Components/FarmerModal";
 import React, { useEffect, useState } from "react";
 import { FetchAllProduct } from "../database/product_service/read_multi_product";
 import { Header } from "../Components/Header";
-import { NavLink } from "react-router";
-import { QueryFarmer } from "../database/farmer_service/query_farmer";
 
 export const MarketPlace = () => {
-  const [cropData, setCropData] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFarmer, setSelectedFarmer] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedParish, setSelectedParish] = useState("All Parishes");
-
+  const [cropData, setcropData] = useState([]);
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await FetchAllProduct();
-        console.log("Fetched crop data:", data);
-        setCropData(data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-
-    
+    async function fetchData() {
+      const data = await FetchAllProduct();
+      console.log(data);
+      setcropData(data);
+      return;
+    }
 
     fetchData();
+    return;
+  
   }, []);
 
-  // Filter crops based on search and parish
-  const filteredCrops = cropData.filter((crop) => {
-    const matchesSearch = crop.title?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesParish = selectedParish === "All Parishes" || crop.location === selectedParish;
-    return matchesSearch && matchesParish;
-  });
+  console.log("Hello", cropData);
 
-  const handleContactClick = async (crop) => {
-    try {
-      // If crop has farmer_id, fetch full farmer data
-      console.log("The crop is", crop)
-      if (crop.farmer_id) {
-        const farmerData = await QueryFarmer({id: crop.farmer_id});
-        console.log("Farmer Data here", farmerData);
-        setSelectedFarmer(farmerData);
-        // Wait for state to update before opening modal
-        setTimeout(() => setIsModalOpen(true), 0);
-      } else {
-        // Fallback: use farmer data embedded in crop (for backward compatibility)
-        setSelectedFarmer({
-          name: crop.farmerName || "Local Farmer",
-          phone: crop.farmerPhone || "+1 (876) 555-0000",
-          email: crop.farmerEmail || "farmer@farm.jm",
-          location: crop.location || "Jamaica",
-          farm: crop.farmName || "Local Farm",
-          bio: crop.farmerBio || "Dedicated to providing quality produce."
-        });
-        setIsModalOpen(true);
-      }
-    } catch (error) {
-      console.error("Error fetching farmer data:", error);
-      alert("Failed to load farmer information. Please try again.");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFarmer, setSelectedFarmer] = useState(null);
+
+  // Farmer data for each crop
+  const farmersData = {
+    'Scotch Bonnet Peppers': {
+      name: 'Marcus Thompson',
+      phone: '+1 (876) 555-0123',
+      email: 'marcus.thompson@farm.jm',
+      location: 'St. Elizabeth Parish',
+      farm: 'Thompson\'s Organic Farm',
+      bio: 'Growing premium peppers for over 15 years with organic farming practices.'
+    },
+    'Callaloo': {
+      name: 'Jennifer Blake',
+      phone: '+1 (876) 555-0456',
+      email: 'jennifer.blake@farm.jm',
+      location: 'Clarendon Parish',
+      farm: 'Blake Family Greens',
+      bio: 'Third-generation farmer specializing in leafy greens and traditional Jamaican vegetables.'
+    },
+    'Ackee': {
+      name: 'Winston Clarke',
+      phone: '+1 (876) 555-0789',
+      email: 'winston.clarke@farm.jm',
+      location: 'Manchester Parish',
+      farm: 'Clarke Heritage Farm',
+      bio: 'Producing the finest ackee from trees planted by my grandfather. Quality guaranteed.'
+    },
+    'Sweet Potatoes': {
+      name: 'Pauline Stewart',
+      phone: '+1 (876) 555-0321',
+      email: 'pauline.stewart@farm.jm',
+      location: 'Trelawny Parish',
+      farm: 'Stewart Root Crops',
+      bio: 'Specializing in root vegetables with sustainable farming methods for 20 years.'
+    },
+    'Plantains': {
+      name: 'Robert "Bobby" Graham',
+      phone: '+1 (876) 555-0654',
+      email: 'bobby.graham@farm.jm',
+      location: 'Portland Parish',
+      farm: 'Graham Plantain Estate',
+      bio: 'Family-run plantation growing the best plantains in Portland for four generations.'
+    },
+    'Mangoes': {
+      name: 'Sandra Williams',
+      phone: '+1 (876) 555-0987',
+      email: 'sandra.williams@farm.jm',
+      location: 'St. Mary Parish',
+      farm: 'Williams Mango Grove',
+      bio: 'Growing Julie, East Indian, and Bombay mangoes with passion and care since 2005.'
     }
+  };
+
+  const handleContactClick = (farmer) => {
+    setSelectedFarmer(farmer);
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedFarmer(null);
   };
-
-  const parishes = [
-    "All Parishes",
-    "Kingston",
-    "St. Andrew",
-    "Portland",
-    "St. Thomas",
-    "St. Catherine",
-    "Clarendon",
-    "Manchester",
-    "St. Elizabeth",
-    "Westmoreland",
-    "Hanover",
-    "St. James",
-    "Trelawny",
-    "St. Ann",
-    "St. Mary"
-  ];
 
   return (
     <>
-    <Header></Header>
-    <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="mb-12 text-center">
-          <h2 className="text-5xl font-bold text-content-light mb-4">
-            MarketPlace
-          </h2>
-          <p className="text-xl text-content-light/80">
-            Find fresh, locally-grown produce directly from Jamaican farmers.
-          </p>
-        </div>
-
-        {/* Search and Filter Section */}
-        <div className="p-2 rounded-xl mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            {/* Search Input */}
-            <div className="relative col-span-1 md:col-span-2">
-              <input
-                placeholder="Search for crops (e.g., Scotch Bonnet)"
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-14 pl-14 pr-4 text-lg border-1 drop-shadow-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-content-light dark:text-content-dark transition-all"
-              />
-            </div>
-
-            {/* Parish Filter */}
-            <div className="relative">
-              <select
-                value={selectedParish}
-                onChange={(e) => setSelectedParish(e.target.value)}
-                className="cursor-pointer w-full h-14 px-4 text-lg appearance-none border-1 drop-shadow-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-content-light dark:text-content-dark transition-all"
-              >
-                {parishes.map((parish) => (
-                  <option key={parish} value={parish}>
-                    {parish}
-                  </option>
-                ))}
-              </select>
-            </div>
+    
+  <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-5xl mx-auto ">
+      <div className="mb-12 text-center"> 
+        <h2 className="text-5xl font-bold text-content-light">MarketPlace</h2>
+        <p className="mt-4 text-xl text-content-light/80">Find fresh, locally-grown produce directly from Jamaican farmers.</p>
+      </div>
+      <div className="bg-subtle-light dark:bg-subtle-dark p-6 rounded-xl mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="relative col-span-1 md:col-span-2">
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary text-2xl"></span>
+            <input
+            placeholder="Search for crops(e.g., Scotch Bonnet)" 
+            type="text"
+            className="w-full h-16 pl-14 pr-4 text-lg bg-[#73d41133] border-2 border-[#73d41133] rounded-lg focus:[#73d411] text-content-[#73d41133]"
+            />
           </div>
-
-          {/* Results Count */}
-          {searchQuery || selectedParish !== "All Parishes" ? (
-            <div className="mt-4 text-sm text-content-light/70">
-              Showing {filteredCrops.length} {filteredCrops.length === 1 ? 'result' : 'results'}
-            </div>
-          ) : null}
-        </div>
-
-        {/* Crop Listings Section */}
-        <h3 className="text-3xl font-bold text-content-light mb-8">
-          Available Crops
-        </h3>
-
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {filteredCrops.length > 0 ? (
-            filteredCrops.map((crop) => (
-              <CropListings
-                key={crop.id || crop.title}
-                image={crop.image_url || "/src/assets/images/placeholder.jpg"}
-                title={crop.title}
-                price={crop.price || "Price upon request"}
-                quantity={crop.weight_unit}
-                farmer={crop}
-                onContactClick={handleContactClick}
-              />
-            ))
-          ) : (
-            <div className="col-span-full flex flex-col items-center justify-center px-4 py-16">
-              <div className="bg-surface-light dark:bg-surface-dark max-w-md rounded-xl p-12 text-center">
-                <svg
-                  className="text-muted-light dark:text-muted-dark mx-auto mb-6 h-24 w-24"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                  />
-                </svg>
-                <h2 className="text-text-light dark:text-text-dark mb-4 text-3xl font-bold">
-                  {cropData.length === 0 ? "No Crops Yet" : "No Matches Found"}
-                </h2>
-                <p className="text-muted-light dark:text-muted-dark mb-6 text-lg">
-                  {cropData.length === 0
-                    ? "Mi fren, nuh crops nuh available yet. Check back soon!"
-                    : "Try adjusting your search or filter to find what you're looking for."}
-                </p>
-                {(searchQuery || selectedParish !== "All Parishes") && (
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSelectedParish("All Parishes");
-                    }}
-                    className="mt-4 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
-                  >
-                    Clear Filters
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
+          <div className="relative">
+            <select className="cursor-pointer w-full h-16 px-4 text-lg appearance-none form-select bg-background-light border-2 border-border-light rounded-lg focus:ring-primary focus:border-primary text-content-light ">
+                <option>All Parishes</option>
+                <option>Kingston</option>
+                <option>St. Andrew</option>
+                <option>Portland</option>
+                <option>St. Thomas</option>
+            </select>
+          </div>
         </div>
       </div>
-
-      {/* Farmer Contact Modal */}
-      <FarmerModal
+      <h3 className="text-3xl font-bold text-content-light mb-8">Crop Listings</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <CropListings 
+          image="/src/assets/images/scotch.jpg"
+          title="Scotch Bonnet Peppers"
+          price="Price: $5/lb"
+          farmer={farmersData['Scotch Bonnet Peppers']}
+          onContactClick={handleContactClick}
+        />
+        <CropListings 
+          image="/src/assets/images/callaloo.jpg"
+          title="Callaloo"
+          price="Price: $2/bunch"
+          farmer={farmersData['Callaloo']}
+          onContactClick={handleContactClick}
+        />
+        <CropListings 
+          image="/src/assets/images/sweet.jpg"
+          title="Sweet Potatoes"
+          price="Price: $1.50/lb"
+          farmer={farmersData['Sweet Potatoes']}
+          onContactClick={handleContactClick}
+        />
+        <CropListings 
+          image="/src/assets/images/plant.jpg"
+          title="Plantains"
+          price="Price: $2/Hand"
+          farmer={farmersData['Plantains']}
+          onContactClick={handleContactClick}
+        />
+        <CropListings 
+          image="/src/assets/images/ackee.jpg"
+          title="Ackee"
+          price="Price: $10/bunch"
+          farmer={farmersData['Ackee']}
+          onContactClick={handleContactClick}
+        />
+        <CropListings 
+          image="/src/assets/images/callaloo.jpg"
+          title="Callaloo"
+          price="Price: $2/bunch"
+          farmer={farmersData['Callaloo']}
+          onContactClick={handleContactClick}
+        />
+      </div>
+    </div>
+    {/* Modal */}
+      <FarmerModal 
         isOpen={isModalOpen}
         onClose={closeModal}
         farmer={selectedFarmer}
       />
-      </main>
-    </>
-  );
+  </main>
+  </>
+)
 };
