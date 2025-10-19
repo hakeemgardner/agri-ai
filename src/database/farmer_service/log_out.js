@@ -11,5 +11,5 @@ export async function logoutUser() {
 
   console.log("User logged out successfully");
   // Optionally redirect or refresh:
-  window.location.href = "/signin"; // or your login route
+  window.location.href = "/login"; // or your login route
 }
